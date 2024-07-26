@@ -1,0 +1,37 @@
+version: '3'
+services:
+  db:
+    image: postgres:14.3
+    restart: always
+    container_name: image_db
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
+    expose:
+      - 5432
+    networks:
+      - net-ms
+  microservice_image:
+    image: microservice_image
+    restart: always
+    container_name: microservice_image
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      args:
+        - BASE_DIR=.
+    env_file:
+      - ./.env
+    ports:
+      - 8000:8000
+    networks:
+      - net-ms
+    depends_on:
+      - db
+
+networks:
+  net-ms:
+
+      
